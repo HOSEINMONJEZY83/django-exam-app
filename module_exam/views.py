@@ -3,7 +3,11 @@ from django.contrib.auth.decorators import login_required
 from .models import Exam, Question, Answer
 from django.utils import timezone
 
-# Create your views here.
+def home(request):
+    now = timezone.now()
+    exams = Exam.objects.filter(is_active=True, start_time__lte=now, end_time__gte=now)
+    return render(request, 'home.html', {'exams': exams})
+
 @login_required
 def take_exam(request, exam_id):
     exam = get_object_or_404(Exam, id=exam_id)
