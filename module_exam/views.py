@@ -23,6 +23,7 @@ def take_exam(request, exam_id):
 
     if request.method == "POST":
         correct = 0
+        results = []
         for question in questions:
             selected = request.POST.get(f"question_{question.id}")
             if selected:
@@ -31,13 +32,24 @@ def take_exam(request, exam_id):
                     question=question,
                     defaults={'selected': selected}
                 )
-                if selected == question.correct_answer:
+                is_correct = selected == question.correct_answer
+                if is_correct:
                     correct += 1
 
-        score = round((correct / questions.count()) * 100)
-        context = {'score': score}
-        return render(request, 'resualt.html', context)
+                results.append({
+                    'question': question,
+                    'selected': selected,
+                    'is_correct': is_correct,
+                    'correct_answer': question.correct_answer,
+                })
 
+        score = round((correct / questions.count()) * 100)
+        context = {
+            'score': score,
+            'results': results,
+        }
+        return render(request, 'resualt.html', context)
+    
     context = {
         'exam': exam,
         'questions': questions,

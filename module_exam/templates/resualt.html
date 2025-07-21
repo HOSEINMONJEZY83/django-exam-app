@@ -23,16 +23,52 @@
     .emoji {
       font-size: 2rem;
     }
+    .question-card {
+      background-color: #fff;
+      border-left: 5px solid #0d6efd;
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .correct {
+      color: #28a745;
+      font-weight: bold;
+    }
+    .wrong {
+      color: #dc3545;
+      font-weight: bold;
+    }
+    .answer-label {
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <div class="container d-flex justify-content-center align-items-center vh-100">
+  <div class="container my-5">
     <div class="result-box text-center">
       <div class="emoji">🎉</div>
       <h2 class="mb-4">Your Score:</h2>
       <div class="score mb-3">{{ score }} / 100</div>
       <a href="/" class="btn btn-primary btn-lg mt-3 px-4">Back to Home</a>
     </div>
+
+    {% if results %}
+      <h4 class="mt-5 mb-3 text-center">Answer Review:</h4>
+      {% for item in results %}
+        <div class="question-card">
+          <p><strong>Q{{ forloop.counter }}:</strong> {{ item.question.text }}</p>
+          <p class="answer-label">
+            Your Answer:
+            <span class="{% if item.is_correct %}correct{% else %}wrong{% endif %}">
+              {{ item.selected|upper }}
+            </span>
+          </p>
+          {% if not item.is_correct %}
+            <p class="answer-label text-success">Correct Answer: {{ item.correct_answer|upper }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% endif %}
   </div>
 </body>
 </html>
