@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class Exam(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    statr_time = models.DateTimeField()
+    start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     is_active = models.BooleanField(default=True)
     
