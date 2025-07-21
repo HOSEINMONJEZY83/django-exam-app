@@ -11,9 +11,16 @@ def home(request):
 @login_required
 def take_exam(request, exam_id):
     exam = get_object_or_404(Exam, id=exam_id)
+
+    answered = Answer.objects.filter(user=request.user, question__exam=exam).exists()
+    if answered:
+        return render(request, 'already_taken.html')
+
     if not exam.is_active or not (exam.start_time <= timezone.now() <= exam.end_time):
         return render(request, 'not_available.html')
+
     questions = Question.objects.filter(exam=exam)
+
     if request.method == "POST":
         correct = 0
         for question in questions:
@@ -30,7 +37,7 @@ def take_exam(request, exam_id):
         score = round((correct / questions.count()) * 100)
         context = {'score': score}
         return render(request, 'resualt.html', context)
-    
+
     context = {
         'exam': exam,
         'questions': questions,
