@@ -8,7 +8,7 @@ from django.utils import timezone
 def take_exam(request, exam_id):
     exam = get_object_or_404(Exam, id=exam_id)
     if not exam.is_active or not (exam.start_time <= timezone.now() <= exam.end_time):
-        return render(request, 'exam/not_available.html')
+        return render(request, 'not_available.html')
     questions = Question.objects.filter(exam=exam)
     if request.method == "POST":
         correct = 0
@@ -24,9 +24,11 @@ def take_exam(request, exam_id):
                     correct += 1
 
         score = round((correct / questions.count()) * 100)
-        return render(request, 'exam/result.html', {'score': score})
-
-    return render(request, 'exam/take_exam.html', {
+        context = {'score': score}
+        return render(request, 'resualt.html', context)
+    
+    context = {
         'exam': exam,
         'questions': questions,
-    })
+    }
+    return render(request, 'take_exam.html', context)
