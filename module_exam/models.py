@@ -1,6 +1,13 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 # Create your models here.
+
+class User(AbstractUser):
+    ROLE_CHOICES = (
+        ('teacher', 'Teacher'),
+        ('student', 'Student'),
+    )
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
 
 class Exam(models.Model):
     title = models.CharField(max_length=100)
@@ -8,6 +15,7 @@ class Exam(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     is_active = models.BooleanField(default=True)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     
     def __str__(self):
         return self.title
@@ -19,7 +27,7 @@ class Question(models.Model):
     option_b = models.CharField(max_length=150)
     option_c = models.CharField(max_length=150)
     option_d = models.CharField(max_length=150)
-    correct_answer = models.CharField(max_length=1,choices=[('a', 'A'), ('b', 'B'), ('c', 'C'), ('d', 'D')]) # a or b or c or d
+    correct_answer = models.CharField(max_length=1,choices=[('a', 'A'), ('b', 'B'), ('c', 'C'), ('d', 'D')])
     
     def __str__(self):
         return self.text[:50]
