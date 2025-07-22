@@ -2,18 +2,47 @@ from django.shortcuts import render , get_object_or_404 ,redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required , user_passes_test
 from .models import Exam, Question, Answer
+import openpyxl
+from django.http import HttpResponse , HttpResponseForbidden
 from django.utils import timezone
 from django.contrib.auth import authenticate, login , logout
 from .forms import QuestionForm ,CustomUserCreationForm ,ExamForm
 
 def home(request):
     now = timezone.now()
-    exams = Exam.objects.filter(is_active=True, start_time__lte=now, end_time__gte=now)
+    
+    if request.user.is_authenticated:
+        if request.user.role == 'student':
+            exams = Exam.objects.filter(
+                is_active=True,
+                start_time__lte=now,
+                end_time__gte=now,
+                creator__in=request.user.teachers.all()
+            )
+        elif request.user.role == 'teacher':
+            exams = Exam.objects.filter(
+                is_active=True,
+                start_time__lte=now,
+                end_time__gte=now,
+                creator=request.user
+            )
+        else:
+            exams = Exam.objects.none()
+    else:
+        exams = Exam.objects.none()
+
     return render(request, 'home.html', {'exams': exams})
 
 @login_required
 def take_exam(request, exam_id):
     exam = get_object_or_404(Exam, id=exam_id)
+
+    if request.user.role == 'teacher':
+        return HttpResponseForbidden("Teachers are not allowed to take exams.")
+
+    if request.user.role == 'student':
+        if exam.creator not in request.user.teachers.all():
+            return HttpResponseForbidden("You are not allowed to take this test.")
 
     answered = Answer.objects.filter(user=request.user, question__exam=exam).exists()
     if answered:
@@ -80,7 +109,7 @@ def custom_login(request):
 @login_required
 def user_logout(request):
     logout(request)
-    return redirect('login')
+    return redirect('home')
 
 def is_teacher(user):
     return user.is_authenticated and user.role == 'teacher'
@@ -124,9 +153,44 @@ def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            user.save()
+            if user.role == 'student':
+                user.teachers.set(form.cleaned_data['teachers'])
             return redirect('login')
     else:
         form = CustomUserCreationForm()
     return render(request, 'register.html', {'form': form})
 
+
+@login_required
+@user_passes_test(is_teacher)
+def export_excel(request):
+    user = request.user
+    exams = Exam.objects.filter(creator=user)
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Exam Responses"
+
+    headers = ['Exam Title', 'Student', 'Question', 'Selected Answer', 'Correct Answer']
+    ws.append(headers)
+
+    answers = Answer.objects.filter(question__exam__in=exams).select_related('question', 'user')
+
+    for ans in answers:
+        ws.append([
+            ans.question.exam.title,
+            ans.user.username,
+            ans.question.text,
+            ans.selected.upper(),
+            ans.question.correct_answer.upper(),
+        ])
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename=exam_responses.xlsx'
+
+    wb.save(response)
+    return response
