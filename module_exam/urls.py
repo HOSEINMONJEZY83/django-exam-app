@@ -7,5 +7,6 @@ urlpatterns = [
     path('login',views.custom_login, name='login'),
     path('logout',views.user_logout, name='logout'),
     path('teacher/dashboard/', views.teacher_dashboard, name='teacher_dashboard'),
+    path('export_excel/', views.export_excel, name='export_excel'),
     path('exam/<int:exam_id>/', views.take_exam, name='take_exam'),
 ]
