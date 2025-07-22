@@ -7,6 +7,9 @@
 </head>
 <body>
 <div class="container mt-5">
+    <form method="get" action="{% url 'export_excel' %}">
+        <button type="submit" class="btn btn-info mb-4">Download Excel Report</button>
+    </form>
 
     <h2>Create New Exam</h2>
     <form method="post" novalidate>
