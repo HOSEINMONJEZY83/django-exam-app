@@ -59,11 +59,6 @@ python manage.py runserver
 
 - Simple and user-friendly interface built with Bootstrap
 
-- Pull requests are welcome. For major changes, please open an issue first
-to discuss what you would like to change.
-
-- Please make sure to update tests as appropriate.
-
 ## 📦 Excel Export by Teachers
 
 - Teachers can download an Excel file of student answers for their exams directly from their dashboard.
