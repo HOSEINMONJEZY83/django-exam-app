@@ -10,7 +10,6 @@ class User(AbstractUser):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     teachers = models.ManyToManyField('self', symmetrical=False, limit_choices_to={'role': 'teacher'}, blank=True)
 
-
 class Exam(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True)

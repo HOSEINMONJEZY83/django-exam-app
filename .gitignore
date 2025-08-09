@@ -1,23 +1,37 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
+# Python
+**/__pycache__/
 *.py[cod]
-*$py.class
-
-# SQLite database
-db.sqlite3
-
-# Django stuff:
-*.log
-*.pot
-*.pyc
+*.egg
+*.egg-info/
 *.pyo
 *.pyd
 
-# Env folder
-venv/
-env/
+# Django static and media
+/staticfiles/
+*.db
+*.sqlite3
 
-# IDE files
+# Virtual Environment
+venv/
+
+# Environment Variables
+.env
+*.env
+.env.*
+
+# VS Code and IDEs
 .vscode/
 .idea/
-*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Cache
+*.cache
+
+module/migrations/*
+!module/migrations/__init__.py
