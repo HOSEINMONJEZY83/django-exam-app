@@ -33,5 +33,5 @@ Thumbs.db
 # Cache
 *.cache
 
-module/migrations/*
-!module/migrations/__init__.py
+module_exam/migrations/*
+!module_exam/migrations/__init__.py
