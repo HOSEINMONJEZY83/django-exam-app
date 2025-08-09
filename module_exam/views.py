@@ -7,6 +7,7 @@ from django.http import HttpResponse , HttpResponseForbidden
 from django.utils import timezone
 from django.contrib.auth import authenticate, login , logout
 from .forms import QuestionForm ,CustomUserCreationForm ,ExamForm
+from datetime import datetime
 
 def home(request):
     now = timezone.now()
@@ -167,7 +168,12 @@ def register(request):
 @user_passes_test(is_teacher)
 def export_excel(request):
     user = request.user
-    exams = Exam.objects.filter(creator=user)
+    date = request.GET.get("date")
+    if date:
+        date_str = datetime.strptime(date, '%Y-%m-%d').date()
+        exams = Exam.objects.filter(creator=user, start_time__gte=date_str)
+    else:
+        exams = Exam.objects.filter(creator=user)
 
     wb = openpyxl.Workbook()
     ws = wb.active
