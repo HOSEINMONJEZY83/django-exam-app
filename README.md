@@ -66,7 +66,7 @@ python manage.py runserver
 #### 📌 What features does your project have?
 
 The project allows users to register as a student or teacher, create and manage timed exams, and participate in exams within their allowed time frame. Students can only access exams created by their assigned teachers, and results are calculated automatically.
-##### 📌 Can teachers participate in their own exams?
+#### 📌 Can teachers participate in their own exams?
 
 No, teachers cannot take their own exams
 #### 📌 How are exam times managed?
